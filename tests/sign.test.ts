@@ -122,23 +122,32 @@ describe("Signature test", () => {
 
   it("Signs message nonce and verifies", async () => {
     const { nonce } = await authorityClient.account.counter.fetch(counter.publicKey);
-    const message = new Uint8Array(nonce.toBuffer());
+    const message = new Uint8Array(nonce.toBuffer("be", 8));
     const messageHash = keccak256(Buffer.from(message));
     const { signature, recid } = secp256k1.ecdsaSign(messageHash, signerPrivateKey);
+
+    const ix = Secp256k1Program.createInstructionWithEthAddress({
+      ethAddress: signerEthAddress,
+      message,
+      signature,
+      recoveryId: recid,
+    });
 
     const tx = new Transaction({
       recentBlockhash: (await provider.connection.getLatestBlockhash()).blockhash,
       feePayer: authorityKeypair.publicKey,
-    }).add(
-      Secp256k1Program.createInstructionWithEthAddress({
-        ethAddress: signerEthAddress,
-        message,
-        signature,
-        recoveryId: recid,
-      }),
-    );
+    }).add(ix);
 
     await provider.send(tx);
+
+    console.log("== KNOWN ==");
+    console.log("ethAddress: ", new Uint8Array(Buffer.from(signerEthAddress, "hex")));
+    console.log("message: ", message);
+
+    console.log("== IX DATA ==");
+    console.log("program id: ", ix.programId.toBase58());
+    console.log("data: ")
+    console.log(new Uint8Array(ix.data));
   });
 
   it("Signs and increments with signature", async () => {
@@ -167,6 +176,7 @@ describe("Signature test", () => {
           },
         }),
       );
+
     const signedTx = await userWallet.signTransaction(tx);
     const txhash = await connection.sendRawTransaction(signedTx.serialize());
     await connection.confirmTransaction(txhash, "confirmed");

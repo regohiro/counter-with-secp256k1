@@ -10,6 +10,7 @@ declare_id!("B6PnZuXyucDyREe3hpuEwTQPeQnzKjyAVqaBwxFkzrSp");
 mod counter {
   use super::*;
 
+  //Known constants
   const ETH_ADDRESS_OFFSET: usize = 12;
   const MESSAGE_OFFSET: usize = 97;
 
@@ -45,23 +46,16 @@ mod counter {
       return Err(InvalidSecpInstruction.into());
     }
 
-    //Only single recovery expected
-    let secp_ix_data = secp_ix.data;
-    if secp_ix_data.len() < 2 {
-      return Err(InvalidSecpInstruction.into());
-    }
-    if secp_ix_data[0] != 1 {
-      return Err(InvalidSecpInstruction.into());
-    }
+    // let secp_ix_data = secp_ix.data;
 
     //Validate signature
-    let ix_signer = secp_ix_data[ETH_ADDRESS_OFFSET..ETH_ADDRESS_OFFSET + 20].to_vec();
+    let ix_signer = secp_ix.data[ETH_ADDRESS_OFFSET..ETH_ADDRESS_OFFSET + 20].to_vec();
     if ix_signer != counter.signer_address {
       return Err(InvalidSecpSignature.into());
     }
 
     //Validate message(nonce)
-    let message = secp_ix_data[MESSAGE_OFFSET..].to_vec();
+    let message = secp_ix.data[MESSAGE_OFFSET..].to_vec();
 
     if message != counter.nonce.to_be_bytes() {
       return Err(InvalidSecpNonce.into());
