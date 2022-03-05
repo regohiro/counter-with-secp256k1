@@ -13,7 +13,6 @@ const main = async () => {
   console.log("hash1: ", hash1);
   const hash2 = keccak256(Buffer.from(numUint8Array));
   console.log("hash2: ", hash2);
-
 };
 
 main()

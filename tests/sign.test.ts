@@ -20,7 +20,8 @@ import keccak256 from "keccak256";
 chai.use(chaiAsPromised);
 
 const Counter_PROGRAM_ID = new PublicKey("B6PnZuXyucDyREe3hpuEwTQPeQnzKjyAVqaBwxFkzrSp");
-const delay = (ms: number): Promise<PromiseConstructor> => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms: number): Promise<PromiseConstructor> =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 const getSignerKey = () => {
   let signerKeypair: Keypair;
@@ -133,9 +134,9 @@ describe("Signature test", () => {
         ethAddress: signerEthAddress,
         message,
         signature,
-        recoveryId: recid
-      })
-    )
+        recoveryId: recid,
+      }),
+    );
 
     await provider.send(tx);
   });
@@ -149,23 +150,25 @@ describe("Signature test", () => {
     const tx = new Transaction({
       recentBlockhash: (await provider.connection.getLatestBlockhash()).blockhash,
       feePayer: userKeypair.publicKey,
-    }).add(
-      Secp256k1Program.createInstructionWithEthAddress({
-        ethAddress: signerEthAddress,
-        message,
-        signature,
-        recoveryId: recid
-      })
-    ).add(
-      userClient.instruction.increment({
-        accounts: {
-          counter: counter.publicKey,
-          sysvarInstruction: SYSVAR_INSTRUCTIONS_PUBKEY
-        }
-      })
-    )
+    })
+      .add(
+        Secp256k1Program.createInstructionWithEthAddress({
+          ethAddress: signerEthAddress,
+          message,
+          signature,
+          recoveryId: recid,
+        }),
+      )
+      .add(
+        userClient.instruction.increment({
+          accounts: {
+            counter: counter.publicKey,
+            sysvarInstruction: SYSVAR_INSTRUCTIONS_PUBKEY,
+          },
+        }),
+      );
     const signedTx = await userWallet.signTransaction(tx);
-    const txhash = await connection.sendRawTransaction(signedTx.serialize());  
+    const txhash = await connection.sendRawTransaction(signedTx.serialize());
     await connection.confirmTransaction(txhash, "confirmed");
 
     const counterAccount = await authorityClient.account.counter.fetch(counter.publicKey);

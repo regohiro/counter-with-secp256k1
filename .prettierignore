@@ -5,3 +5,5 @@ package.json
 package-lock.json
 tsconfig.json
 tsconfig.eslint.json
+target
+.anchor

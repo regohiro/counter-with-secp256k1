@@ -5,7 +5,6 @@
   "description": "Counter with secp256k1 signature",
   "license": "MIT",
   "scripts": {
-    "postinstall": "npm-run-all husky:init",
     "build": "anchor build",
     "test": "anchor test",
     "script": "ts-node -r dotenv/config",
@@ -14,10 +13,7 @@
     "prettier:fix": "prettier --write \"**/*.{ts,js}\"",
     "lint:check": "yarn prettier:check && npx eslint '**/*.{js,ts}'",
     "lint:fix": "yarn prettier:fix &&  npx eslint '**/*.{js,ts}' --fix",
-    "clean": "rimraf target",
-    "husky:init": "husky install",
-    "husky:commit": "yarn lint:check",
-    "husky:push": "yarn lint:fix"
+    "clean": "rimraf target"
   },
   "lint-staged": {
     "**/*.{ts,js,rs}": [
@@ -39,6 +35,8 @@
     "@types/mocha": "^9.1.0",
     "@types/node": "^17.0.10",
     "@types/secp256k1": "^4.0.3",
+    "@typescript-eslint/eslint-plugin": "^5.13.0",
+    "@typescript-eslint/parser": "^5.13.0",
     "bn.js": "^5.2.0",
     "chai": "^4.3.6",
     "concurrently": "^7.0.0",
